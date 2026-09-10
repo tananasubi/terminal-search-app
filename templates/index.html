@@ -1,72 +1,195 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>ターミナルユーティリティ生成器</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f4f9; }
-        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f4f4f9;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .reset-button {
+            background: #6c757d;
+        }
+
+        .reset-button:hover {
+            background: #545b62;
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            min-height: 24px;
+        }
     </style>
 </head>
+
 <body>
+
     <h1>Terminal Utility Generator</h1>
+
     <div class="box">
         <form method="POST">
+
             <label for="action_type">用途を選択:</label>
+
             <select id="action_type" name="action_type" onchange="updateLabels()">
-                <option value="find_error" {% if action_type == 'find_error' %}selected{% endif %}>エラーを探す (Select-String)</option>
-                <option value="find_file" {% if action_type == 'find_file' %}selected{% endif %}>ファイルを探す (Get-ChildItem)</option>
-                <option value="copy_file" {% if action_type == 'copy_file' %}selected{% endif %}>ファイルをコピーする (Copy-Item)</option>
+                <option value="find_error" {% if action_type == 'find_error' %}selected{% endif %}>
+                    エラーを探す (Select-String)
+                </option>
+
+                <option value="find_file" {% if action_type == 'find_file' %}selected{% endif %}>
+                    ファイルを探す (Get-ChildItem)
+                </option>
+
+                <option value="copy_file" {% if action_type == 'copy_file' %}selected{% endif %}>
+                    ファイルをコピーする (Copy-Item)
+                </option>
             </select>
 
             <label id="label1" for="input1">ファイルパス:</label>
-            <input type="text" id="input1" name="input1" value="{{ input1 }}" placeholder="">
+
+            <input
+                type="text"
+                id="input1"
+                name="input1"
+                value="{{ input1 }}"
+                placeholder=""
+            >
 
             <label id="label2" for="input2">検索キーワード:</label>
-            <input type="text" id="input2" name="input2" value="{{ input2 }}" placeholder="">
+
+            <input
+                type="text"
+                id="input2"
+                name="input2"
+                value="{{ input2 }}"
+                placeholder=""
+            >
 
             <button type="submit">コマンドを生成する</button>
+
+            <button
+                type="button"
+                class="reset-button"
+                onclick="resetForm()"
+            >
+                リセット
+            </button>
+
         </form>
     </div>
 
-    {% if command %}
+
     <div class="box">
+
         <label>生成されたターミナル用コード:</label>
+
         <pre><code>{{ command }}</code></pre>
+
     </div>
-    {% endif %}
+
 
     <script>
+
         function updateLabels() {
+
             const type = document.getElementById('action_type').value;
+
             const label1 = document.getElementById('label1');
             const label2 = document.getElementById('label2');
+
             const input1 = document.getElementById('input1');
             const input2 = document.getElementById('input2');
 
+
             if (type === 'find_error') {
+
                 label1.textContent = 'ファイルパス:';
                 input1.placeholder = '例: C:\\logs\\app.log';
+
                 label2.textContent = '検索キーワード:';
                 input2.placeholder = '例: error';
-            } else if (type === 'find_file') {
+
+            }
+
+            else if (type === 'find_file') {
+
                 label1.textContent = '検索するフォルダパス:';
                 input1.placeholder = '例: C:\\Projects';
+
                 label2.textContent = 'ファイル名・拡張子 (ワイルドカード可):';
                 input2.placeholder = '例: *.txt';
-            } else if (type === 'copy_file') {
+
+            }
+
+            else if (type === 'copy_file') {
+
                 label1.textContent = 'コピー元のファイルパス:';
                 input1.placeholder = '例: C:\\data\\source.txt';
+
                 label2.textContent = 'コピー先のパス:';
                 input2.placeholder = '例: D:\\backup\\source.txt';
+
             }
         }
+
+
+        function resetForm() {
+
+            window.location.href = '/';
+
+        }
+
+
         window.onload = updateLabels;
+
     </script>
+
 </body>
 </html>
