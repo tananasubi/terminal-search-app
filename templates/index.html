@@ -58,6 +58,15 @@
             background: #545b62;
         }
 
+        .copy-button {
+            background: #28a745;
+            margin-top: 10px;
+        }
+
+        .copy-button:hover {
+            background: #218838;
+        }
+
         pre {
             background: #272822;
             color: #f8f8f2;
@@ -65,6 +74,7 @@
             border-radius: 4px;
             overflow-x: auto;
             min-height: 24px;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -130,7 +140,15 @@
 
         <label>生成されたターミナル用コード:</label>
 
-        <pre><code>{{ command }}</code></pre>
+        <pre><code id="generated-code">{{ command }}</code></pre>
+
+        <button
+            type="button"
+            class="copy-button"
+            onclick="copyCode()"
+        >
+            コードをコピー
+        </button>
 
     </div>
 
@@ -177,6 +195,15 @@
                 input2.placeholder = '例: D:\\backup\\source.txt';
 
             }
+        }
+
+
+        function copyCode() {
+
+            const code = document.getElementById('generated-code').textContent;
+
+            navigator.clipboard.writeText(code);
+
         }
 
 

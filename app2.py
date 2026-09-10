@@ -12,8 +12,8 @@ def index():
 
     if request.method == "POST":
         action_type = request.form.get("action_type", "find_error")
-        input1 = request.form.get("input1", "").strip().strip("\"")
-        input2 = request.form.get("input2", "").strip().strip("\"")
+        input1 = request.form.get("input1", "").strip().strip('"')
+        input2 = request.form.get("input2", "").strip().strip('"')
 
         if action_type == "find_error":
             keyword = input2 if input2 else "error"
@@ -25,7 +25,29 @@ def index():
             command = f'Get-ChildItem -Path "{path}" -Filter "{pattern}" -Recurse'
 
         elif action_type == "copy_file":
-            command = f'Copy-Item -Path "{input1}" -Destination "{input2}"'
+            command = f'''$source = "{input1}"
+$destination = "{input2}"
+
+if (Test-Path $destination -PathType Container) {{
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($source)
+    $extension = [System.IO.Path]::GetExtension($source)
+    $target = Join-Path $destination ($name + $extension)
+
+    if (Test-Path $target) {{
+        $target = Join-Path $destination ($name + " - コピー" + $extension)
+        $count = 2
+
+        while (Test-Path $target) {{
+            $target = Join-Path $destination ($name + " - コピー (" + $count + ")" + $extension)
+            $count++
+        }}
+    }}
+
+    Copy-Item -Path $source -Destination $target
+}}
+else {{
+    Copy-Item -Path $source -Destination $destination
+}}'''
 
     return render_template(
         "index.html",
